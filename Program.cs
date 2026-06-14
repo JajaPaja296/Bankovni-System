@@ -8,7 +8,7 @@ namespace krypto
     {
         static void Main()
         {
-            // Oprava otazníků v konzoli
+            
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             BankovniSystem banka = new BankovniSystem();
