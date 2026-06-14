@@ -6,8 +6,11 @@ namespace krypto
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
+            // Oprava otazníků v konzoli
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             BankovniSystem banka = new BankovniSystem();
             bool bezi = true;
 
@@ -27,11 +30,11 @@ namespace krypto
             while (bezi)
             {
                 Console.Write("banka> ");
-                string vstup = Console.ReadLine()?.Trim();
+                string vstup = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(vstup)) continue;
 
-                string[] casti = vstup.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] casti = vstup.Split(' ');
                 if (casti.Length == 0) continue;
 
                 string prikaz = casti[0].ToLower();
@@ -45,7 +48,7 @@ namespace krypto
                     case "info":
                         if (casti.Length < 2)
                         {
-                            Console.WriteLine("Chyba: Zadej cislo uctu! Priklad: info 111");
+                            Console.WriteLine("Chyba: Zadej cislo uctu!");
                             break;
                         }
                         Account u = banka.NajdiUcet(casti[1]);
