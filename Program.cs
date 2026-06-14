@@ -8,7 +8,6 @@ namespace krypto
     {
         static void Main()
         {
-            
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             BankovniSystem banka = new BankovniSystem();
@@ -21,11 +20,12 @@ namespace krypto
             banka.PridatUcet(sporiciUcet);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=====================================");
+            Console.WriteLine("-------------------------------------");
             Console.WriteLine("    BANKOVNI SIMULATOR REPL v1.0     ");
-            Console.WriteLine("=====================================");
+            Console.WriteLine("-------------------------------------");
             Console.ResetColor();
-            Console.WriteLine("Prikazy: list, info [cislo], vklad [cislo] [castka], vyber [cislo] [castka], help, exit\n");
+            Console.WriteLine("Prikazy: list, info [cislo], vklad [cislo] [castka], vyber [cislo] [castka]");
+            Console.WriteLine("         historie [cislo], prevod [z_cisla] [na_cislo] [castka], help, exit\n");
 
             while (bezi)
             {
@@ -53,6 +53,17 @@ namespace krypto
                         }
                         Account u = banka.NajdiUcet(casti[1]);
                         if (u != null) u.VypisInfo();
+                        else Console.WriteLine("Ucet nenalezen.");
+                        break;
+
+                    case "historie":
+                        if (casti.Length < 2)
+                        {
+                            Console.WriteLine("Chyba: Zadej cislo uctu!");
+                            break;
+                        }
+                        Account ucetHist = banka.NajdiUcet(casti[1]);
+                        if (ucetHist != null) ucetHist.VypisHistorii();
                         else Console.WriteLine("Ucet nenalezen.");
                         break;
 
@@ -85,21 +96,20 @@ namespace krypto
                         {
                             if (decimal.TryParse(casti[2], out decimal castkaVyber))
                             {
-                                if (ucetProVyber is CheckingAccount bezny)
+                                try
                                 {
-                                    bezny.VyberSOverdraftem(castkaVyber);
+                                    if (ucetProVyber is CheckingAccount bezny)
+                                    {
+                                        bezny.VyberSOverdraftem(castkaVyber);
+                                    }
+                                    else if (ucetProVyber is SavingsAccount sporici)
+                                    {
+                                        sporici.Vybrat(castkaVyber);
+                                    }
                                 }
-                                else
+                                catch (InsufficientFundsException ex)
                                 {
-                                    if (ucetProVyber.Zustatek - castkaVyber < 0)
-                                    {
-                                        Console.WriteLine("Chyba: Na sporicim uctu nemuzete jit do minusu!");
-                                    }
-                                    else
-                                    {
-                                        ucetProVyber.Zustatek -= castkaVyber;
-                                        Console.WriteLine("Uspesne vybrano: $" + castkaVyber);
-                                    }
+                                    Console.WriteLine("Chyba pri vybehu: " + ex.Message);
                                 }
                             }
                             else Console.WriteLine("Chyba: Neplatny format castky!");
@@ -107,13 +117,28 @@ namespace krypto
                         else Console.WriteLine("Ucet nenalezen.");
                         break;
 
+                    case "prevod":
+                        if (casti.Length < 4)
+                        {
+                            Console.WriteLine("Chyba: Pouziti: prevod [z_uctu] [na_ucet] [castka]");
+                            break;
+                        }
+                        if (decimal.TryParse(casti[3], out decimal castkaPrevod))
+                        {
+                            banka.PrevedPenize(casti[1], casti[2], castkaPrevod);
+                        }
+                        else Console.WriteLine("Chyba: Neplatny format castky!");
+                        break;
+
                     case "help":
                         Console.WriteLine("\n--- NAPOVEDA ---");
-                        Console.WriteLine("list                 - Zobrazi vsechny ucty");
-                        Console.WriteLine("info [cislo]         - Detaily uctu");
-                        Console.WriteLine("vklad [cislo] [kc]   - Vlozi penize na ucet");
-                        Console.WriteLine("vyber [cislo] [kc]   - Vybere penize z uctu");
-                        Console.WriteLine("exit                 - Ukonci program\n");
+                        Console.WriteLine("list                                 - Zobrazi vsechny ucty");
+                        Console.WriteLine("info [cislo]                         - Detaily uctu");
+                        Console.WriteLine("vklad [cislo] [kc]                   - Vlozi penize na ucet");
+                        Console.WriteLine("vyber [cislo] [kc]                   - Vybere penize z uctu");
+                        Console.WriteLine("historie [cislo]                     - Vypise historii transakci uctu");
+                        Console.WriteLine("prevod [z_cisla] [na_cislo] [kc]     - Prevede penize mezi ucty");
+                        Console.WriteLine("exit                                 - Ukonci program\n");
                         break;
 
                     case "exit":

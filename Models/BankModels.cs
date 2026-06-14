@@ -13,8 +13,6 @@ namespace krypto.Models
         public string CisloUctu { get; set; }
         public string Majitel { get; set; }
         public decimal Zustatek { get; set; }
-
-        // seznam vsech transakci na tomto uctu
         public List<Transaction> Historie = new List<Transaction>();
 
         public Account(string cisloUctu, string majitel, decimal pocatecniVklad)
@@ -38,7 +36,6 @@ namespace krypto.Models
             Console.WriteLine("Uspesne vlozeno: $" + castka + ". Novy zustatek: $" + Zustatek);
         }
 
-        // prida zaznam o operaci do historie
         public void PridatDoHistorie(string typ, decimal castka)
         {
             Transaction transakce = new Transaction();
@@ -49,7 +46,6 @@ namespace krypto.Models
             Historie.Add(transakce);
         }
 
-        // vypise vsechny transakce uctu
         public void VypisHistorii()
         {
             Console.WriteLine("\n--- HISTORIE UCTU " + CisloUctu + " ---");
@@ -86,7 +82,6 @@ namespace krypto.Models
             Console.ResetColor();
         }
 
-        // vybere penize ze sporicího uctu (nelze jit do minusu)
         public void Vybrat(decimal castka)
         {
             if (castka <= 0)
@@ -143,7 +138,6 @@ namespace krypto.Models
         }
     }
 
-    // uchovava informace o jedne bankovni operaci
     public class Transaction
     {
         public DateTime Datum { get; set; }
@@ -152,7 +146,6 @@ namespace krypto.Models
         public decimal ZustatekPo { get; set; }
     }
 
-    // vlastni vyjimka - hodi se kdyz neni dost penez na uctu
     public class InsufficientFundsException : Exception
     {
         public InsufficientFundsException(string zprava) : base(zprava)
